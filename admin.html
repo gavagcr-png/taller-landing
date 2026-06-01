@@ -331,7 +331,7 @@
     </div>
 
     <div class="info-box">
-      <strong>💡 Sobre este panel:</strong> Los contadores usan <a href="https://countapi.xyz" target="_blank">CountAPI</a> (servicio gratuito, sin registro). Cada visita a la landing y cada click en "Descargar" incrementa su contador respectivo. Los datos son globales y en tiempo real.<br><br>
+      <strong>💡 Sobre este panel:</strong> Los contadores usan <a href="https://counterapi.com" target="_blank">CounterAPI</a> (servicio gratuito, sin registro). Cada visita a la landing y cada click en "Descargar" incrementa su contador respectivo. Los datos son globales y en tiempo real.<br><br>
       Para estadísticas más avanzadas (por país, por hora, con gráficos históricos), podés integrar <strong>Google Analytics</strong> o <strong>Plausible Analytics</strong> gratuitamente. Consultame cómo hacerlo.
     </div>
   </main>
@@ -345,7 +345,7 @@
   const ADMIN_USER = 'admin';
   const ADMIN_PASS = 'taller2025';   // ← CAMBIÁ ESTO
 
-  const NAMESPACE = 'tallerpro-landing';
+  const NAMESPACE = 'gavagcr-tallerpro';
 
   function doLogin() {
     const u = document.getElementById('username').value.trim();
@@ -378,25 +378,21 @@
     document.getElementById('last-update').textContent = 'Cargando...';
     try {
       const [rv, rd] = await Promise.all([
-        fetch(`https://api.countapi.xyz/get/${NAMESPACE}/visits`).then(r => r.json()),
-        fetch(`https://api.countapi.xyz/get/${NAMESPACE}/downloads`).then(r => r.json())
+        fetch(`https://counterapi.com/api/${NAMESPACE}/view/visits?readOnly=true`).then(r => r.json()),
+        fetch(`https://counterapi.com/api/${NAMESPACE}/view/downloads?readOnly=true`).then(r => r.json())
       ]);
 
-      const visits = rv.value || 0;
-      const downloads = rd.value || 0;
+      const visits = Number(rv.value) || 0;
+      const downloads = Number(rd.value) || 0;
       const rate = visits > 0 ? ((downloads / visits) * 100).toFixed(1) + '%' : '0%';
 
       document.getElementById('d-visits').textContent = visits.toLocaleString('es-AR');
       document.getElementById('d-downloads').textContent = downloads.toLocaleString('es-AR');
       document.getElementById('d-rate').textContent = rate;
 
-      // Barras
       const max = Math.max(visits, 1);
-      const vPct = Math.round((visits / max) * 100);
-      const dPct = Math.round((downloads / max) * 100);
-
-      document.getElementById('bar-visits').style.width = vPct + '%';
-      document.getElementById('bar-dl').style.width = Math.max(dPct, 2) + '%';
+      document.getElementById('bar-visits').style.width = Math.round((visits/max)*100) + '%';
+      document.getElementById('bar-dl').style.width = Math.max(Math.round((downloads/max)*100), 2) + '%';
       document.getElementById('bv-visits').textContent = visits.toLocaleString('es-AR');
       document.getElementById('bv-dl').textContent = downloads.toLocaleString('es-AR');
 
