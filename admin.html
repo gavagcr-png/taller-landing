@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TallerPRO — Panel Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --black: #0a0a0a;
+      --white: #f5f0e8;
+      --orange: #e8500a;
+      --steel: #1a1f2e;
+      --steel-mid: #252d40;
+      --muted: rgba(245,240,232,0.45);
+    }
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* ─── LOGIN ─── */
+    #login-screen {
+      min-height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .login-box {
+      background: var(--steel);
+      border: 1px solid rgba(232,80,10,0.3);
+      border-radius: 4px;
+      padding: 3rem 2.5rem;
+      width: 100%; max-width: 360px;
+      text-align: center;
+    }
+    .login-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2rem;
+      color: var(--orange);
+      letter-spacing: 0.1em;
+      margin-bottom: 0.3rem;
+    }
+    .login-sub {
+      font-size: 0.78rem;
+      color: var(--muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 2rem;
+    }
+    .field {
+      margin-bottom: 1rem;
+      text-align: left;
+    }
+    .field label {
+      display: block;
+      font-size: 0.75rem;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+    .field input {
+      width: 100%;
+      background: rgba(245,240,232,0.06);
+      border: 1px solid rgba(245,240,232,0.15);
+      border-radius: 2px;
+      padding: 0.7rem 1rem;
+      color: var(--white);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .field input:focus { border-color: var(--orange); }
+    .btn-login {
+      width: 100%;
+      background: var(--orange);
+      color: var(--black);
+      padding: 0.85rem;
+      border: none;
+      border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.88rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      transition: background 0.2s;
+    }
+    .btn-login:hover { background: #b33d07; }
+    .login-error {
+      font-size: 0.8rem;
+      color: #e74c3c;
+      margin-top: 0.8rem;
+      display: none;
+    }
+
+    /* ─── DASHBOARD ─── */
+    #dashboard { display: none; }
+
+    header {
+      background: var(--steel);
+      border-bottom: 1px solid rgba(232,80,10,0.2);
+      padding: 1.2rem 2.5rem;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .dash-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      color: var(--orange);
+      letter-spacing: 0.1em;
+    }
+    .dash-logo span { color: rgba(245,240,232,0.4); font-size: 0.9rem; }
+    .btn-logout {
+      background: transparent;
+      border: 1px solid rgba(245,240,232,0.2);
+      color: var(--muted);
+      padding: 0.4rem 1rem;
+      border-radius: 2px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-logout:hover { border-color: var(--orange); color: var(--orange); }
+
+    main { padding: 2.5rem; max-width: 1100px; margin: 0 auto; }
+
+    .dash-section-title {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 1.2rem;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2.5rem;
+    }
+    .stat-card {
+      background: var(--steel);
+      border: 1px solid rgba(245,240,232,0.08);
+      border-radius: 4px;
+      padding: 1.5rem 1.8rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: var(--orange);
+    }
+    .stat-card-label {
+      font-size: 0.75rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.6rem;
+    }
+    .stat-card-value {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem;
+      color: var(--white);
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    .stat-card-sub {
+      font-size: 0.75rem;
+      color: rgba(232,80,10,0.7);
+      margin-top: 0.3rem;
+    }
+
+    .chart-box {
+      background: var(--steel);
+      border: 1px solid rgba(245,240,232,0.08);
+      border-radius: 4px;
+      padding: 1.8rem;
+      margin-bottom: 2rem;
+    }
+    .chart-title {
+      font-size: 0.88rem;
+      font-weight: 500;
+      margin-bottom: 1.5rem;
+      color: rgba(245,240,232,0.8);
+    }
+
+    /* Barras simples sin librerías externas */
+    .bar-chart { display: flex; flex-direction: column; gap: 0.7rem; }
+    .bar-row { display: flex; align-items: center; gap: 0.8rem; }
+    .bar-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+      min-width: 48px;
+      text-align: right;
+    }
+    .bar-track {
+      flex: 1;
+      background: rgba(245,240,232,0.06);
+      border-radius: 2px;
+      height: 22px;
+      overflow: hidden;
+    }
+    .bar-fill {
+      height: 100%;
+      background: var(--orange);
+      border-radius: 2px;
+      transition: width 0.8s ease;
+      display: flex; align-items: center; padding-left: 8px;
+    }
+    .bar-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.7rem;
+      color: var(--black);
+      font-weight: 600;
+    }
+
+    .refresh-row {
+      display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;
+    }
+    .btn-refresh {
+      background: transparent;
+      border: 1px solid rgba(232,80,10,0.4);
+      color: var(--orange);
+      padding: 0.45rem 1rem;
+      border-radius: 2px;
+      font-size: 0.78rem;
+      cursor: pointer;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+    .btn-refresh:hover { background: rgba(232,80,10,0.1); }
+    .last-update {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: var(--muted);
+    }
+
+    .info-box {
+      background: rgba(232,80,10,0.06);
+      border: 1px solid rgba(232,80,10,0.2);
+      border-radius: 4px;
+      padding: 1.2rem 1.5rem;
+      font-size: 0.84rem;
+      color: rgba(245,240,232,0.65);
+      line-height: 1.7;
+      margin-top: 1.5rem;
+    }
+    .info-box a { color: var(--orange); text-decoration: none; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">TallerPRO</div>
+    <div class="login-sub">Panel de Administración</div>
+    <div class="field">
+      <label>Usuario</label>
+      <input type="text" id="username" placeholder="admin" autocomplete="username">
+    </div>
+    <div class="field">
+      <label>Contraseña</label>
+      <input type="password" id="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-login" onclick="doLogin()">Ingresar</button>
+    <div class="login-error" id="login-error">Usuario o contraseña incorrectos</div>
+    <div style="font-size:0.72rem; color:rgba(245,240,232,0.25); margin-top:1.5rem;">
+      Acceso restringido. Este panel no es visible para los visitantes.
+    </div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <header>
+    <div>
+      <div class="dash-logo">TallerPRO <span>// Admin</span></div>
+    </div>
+    <button class="btn-logout" onclick="doLogout()">Cerrar sesión</button>
+  </header>
+
+  <main>
+    <div class="refresh-row">
+      <button class="btn-refresh" onclick="loadStats()">↻ Actualizar datos</button>
+      <span class="last-update" id="last-update">—</span>
+    </div>
+
+    <div class="dash-section-title">// estadísticas en tiempo real</div>
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-card-label">Visitas totales</div>
+        <div class="stat-card-value" id="d-visits">—</div>
+        <div class="stat-card-sub">Desde el lanzamiento</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Descargas totales</div>
+        <div class="stat-card-value" id="d-downloads">—</div>
+        <div class="stat-card-sub">Clicks en botón descarga</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-card-label">Tasa de descarga</div>
+        <div class="stat-card-value" id="d-rate">—</div>
+        <div class="stat-card-sub">Descargas / visitas</div>
+      </div>
+    </div>
+
+    <div class="chart-box">
+      <div class="chart-title">Visitas vs. Descargas</div>
+      <div class="bar-chart" id="bar-chart">
+        <div class="bar-row">
+          <span class="bar-label">Visitas</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-visits" style="width:0%"><span class="bar-val" id="bv-visits">0</span></div></div>
+        </div>
+        <div class="bar-row">
+          <span class="bar-label">Descargas</span>
+          <div class="bar-track"><div class="bar-fill" id="bar-dl" style="width:0%; background:#b33d07;"><span class="bar-val" id="bv-dl">0</span></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <strong>💡 Sobre este panel:</strong> Los contadores usan <a href="https://countapi.xyz" target="_blank">CountAPI</a> (servicio gratuito, sin registro). Cada visita a la landing y cada click en "Descargar" incrementa su contador respectivo. Los datos son globales y en tiempo real.<br><br>
+      Para estadísticas más avanzadas (por país, por hora, con gráficos históricos), podés integrar <strong>Google Analytics</strong> o <strong>Plausible Analytics</strong> gratuitamente. Consultame cómo hacerlo.
+    </div>
+  </main>
+</div>
+
+<script>
+  // ──────────────────────────────────────────────────────
+  // CREDENCIALES DE ADMIN
+  // Cambiá estos valores antes de publicar
+  // ──────────────────────────────────────────────────────
+  const ADMIN_USER = 'admin';
+  const ADMIN_PASS = 'taller2025';   // ← CAMBIÁ ESTO
+
+  const NAMESPACE = 'tallerpro-landing';
+
+  function doLogin() {
+    const u = document.getElementById('username').value.trim();
+    const p = document.getElementById('password').value;
+    if (u === ADMIN_USER && p === ADMIN_PASS) {
+      sessionStorage.setItem('admin_auth', '1');
+      showDashboard();
+    } else {
+      document.getElementById('login-error').style.display = 'block';
+    }
+  }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+
+  function doLogout() {
+    sessionStorage.removeItem('admin_auth');
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('login-screen').style.display = 'flex';
+  }
+
+  function showDashboard() {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadStats();
+  }
+
+  async function loadStats() {
+    document.getElementById('last-update').textContent = 'Cargando...';
+    try {
+      const [rv, rd] = await Promise.all([
+        fetch(`https://api.countapi.xyz/get/${NAMESPACE}/visits`).then(r => r.json()),
+        fetch(`https://api.countapi.xyz/get/${NAMESPACE}/downloads`).then(r => r.json())
+      ]);
+
+      const visits = rv.value || 0;
+      const downloads = rd.value || 0;
+      const rate = visits > 0 ? ((downloads / visits) * 100).toFixed(1) + '%' : '0%';
+
+      document.getElementById('d-visits').textContent = visits.toLocaleString('es-AR');
+      document.getElementById('d-downloads').textContent = downloads.toLocaleString('es-AR');
+      document.getElementById('d-rate').textContent = rate;
+
+      // Barras
+      const max = Math.max(visits, 1);
+      const vPct = Math.round((visits / max) * 100);
+      const dPct = Math.round((downloads / max) * 100);
+
+      document.getElementById('bar-visits').style.width = vPct + '%';
+      document.getElementById('bar-dl').style.width = Math.max(dPct, 2) + '%';
+      document.getElementById('bv-visits').textContent = visits.toLocaleString('es-AR');
+      document.getElementById('bv-dl').textContent = downloads.toLocaleString('es-AR');
+
+      document.getElementById('last-update').textContent =
+        'Actualizado: ' + new Date().toLocaleTimeString('es-AR');
+    } catch(e) {
+      document.getElementById('last-update').textContent = 'Error al cargar datos';
+    }
+  }
+
+  // Auto-login si ya estaba autenticado en esta sesión
+  if (sessionStorage.getItem('admin_auth') === '1') showDashboard();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TallerPRO — Software de Manuales de Taller</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --black: #0a0a0a;
+      --white: #f5f0e8;
+      --orange: #e8500a;
+      --orange-dim: #b33d07;
+      --steel: #1a1f2e;
+      --steel-mid: #252d40;
+      --muted: #6b7280;
+      --accent-line: rgba(232,80,10,0.35);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 3rem;
+      background: rgba(10,10,10,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(232,80,10,0.15);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 0.12em;
+      color: var(--orange);
+    }
+    .nav-logo span { color: var(--white); }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      color: rgba(245,240,232,0.65);
+      text-decoration: none;
+      font-size: 0.82rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--orange); }
+    .nav-cta {
+      background: var(--orange);
+      color: var(--black) !important;
+      padding: 0.5rem 1.4rem;
+      border-radius: 2px;
+      font-weight: 500 !important;
+    }
+    .nav-cta:hover { background: var(--orange-dim); color: var(--white) !important; }
+
+    /* ─── HERO ─── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 8rem 2rem 5rem;
+      position: relative;
+      overflow: hidden;
+      text-align: center;
+    }
+    .hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 70% 50% at 50% 40%, rgba(232,80,10,0.12) 0%, transparent 70%);
+      pointer-events: none;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(232,80,10,0.06) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(232,80,10,0.06) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+    .hero-eyebrow {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.25em;
+      color: var(--orange);
+      text-transform: uppercase;
+      margin-bottom: 1.5rem;
+      display: flex; align-items: center; gap: 0.8rem;
+    }
+    .hero-eyebrow::before, .hero-eyebrow::after {
+      content: ''; display: block; width: 40px; height: 1px; background: var(--orange);
+    }
+    h1 {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 10vw, 8rem);
+      line-height: 0.92;
+      letter-spacing: 0.04em;
+      margin-bottom: 1.8rem;
+    }
+    h1 em {
+      font-style: normal;
+      color: var(--orange);
+      display: block;
+    }
+    .hero-desc {
+      max-width: 540px;
+      font-size: 1.05rem;
+      line-height: 1.8;
+      color: rgba(245,240,232,0.7);
+      margin-bottom: 2.8rem;
+    }
+    .hero-actions {
+      display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+    }
+    .btn-primary {
+      background: var(--orange);
+      color: var(--black);
+      padding: 0.9rem 2.2rem;
+      border: none; border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.15s;
+      display: inline-flex; align-items: center; gap: 0.5rem;
+    }
+    .btn-primary:hover { background: var(--orange-dim); transform: translateY(-2px); }
+    .btn-secondary {
+      background: transparent;
+      color: var(--white);
+      padding: 0.9rem 2.2rem;
+      border: 1px solid rgba(245,240,232,0.3);
+      border-radius: 2px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-decoration: none;
+      transition: border-color 0.2s, transform 0.15s;
+    }
+    .btn-secondary:hover { border-color: var(--orange); color: var(--orange); transform: translateY(-2px); }
+
+    .hero-stats {
+      display: flex; gap: 3.5rem; margin-top: 4rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid rgba(245,240,232,0.1);
+    }
+    .stat-item { text-align: center; }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.4rem;
+      color: var(--orange);
+      letter-spacing: 0.05em;
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(245,240,232,0.45);
+      margin-top: 0.3rem;
+    }
+
+    /* ─── VIDEO SECTION ─── */
+    .section-video {
+      padding: 6rem 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+    .section-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      letter-spacing: 0.05em;
+      line-height: 1.05;
+      margin-bottom: 1.5rem;
+    }
+    .video-wrapper {
+      position: relative;
+      width: 100%;
+      padding-bottom: 56.25%;
+      border-radius: 4px;
+      overflow: hidden;
+      border: 1px solid var(--accent-line);
+      box-shadow: 0 0 60px rgba(232,80,10,0.1);
+      margin-top: 2.5rem;
+    }
+    .video-wrapper iframe {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      border: none;
+    }
+
+    /* ─── FEATURES ─── */
+    .section-features {
+      padding: 6rem 2rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5px;
+      margin-top: 3rem;
+      border: 1.5px solid rgba(232,80,10,0.2);
+    }
+    .feature-card {
+      background: var(--steel);
+      padding: 2rem 2rem 2.2rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.2s;
+    }
+    .feature-card:hover { background: var(--steel-mid); }
+    .feature-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--orange), transparent);
+      transform: scaleX(0); transform-origin: left;
+      transition: transform 0.3s;
+    }
+    .feature-card:hover::after { transform: scaleX(1); }
+    .feature-icon {
+      font-size: 1.6rem;
+      margin-bottom: 1rem;
+      display: block;
+    }
+    .feature-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.35rem;
+      letter-spacing: 0.08em;
+      color: var(--white);
+      margin-bottom: 0.6rem;
+    }
+    .feature-desc {
+      font-size: 0.88rem;
+      line-height: 1.75;
+      color: rgba(245,240,232,0.55);
+    }
+    .feature-num {
+      position: absolute; top: 1.5rem; right: 1.5rem;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.72rem;
+      color: rgba(232,80,10,0.3);
+      letter-spacing: 0.1em;
+    }
+
+    /* ─── DOWNLOAD ─── */
+    .section-download {
+      padding: 7rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .section-download::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 50% 50%, rgba(232,80,10,0.08) 0%, transparent 70%);
+    }
+    .download-box {
+      max-width: 640px;
+      margin: 0 auto;
+      background: var(--steel);
+      border: 1px solid var(--accent-line);
+      border-radius: 4px;
+      padding: 3.5rem 3rem;
+      position: relative;
+    }
+    .download-box::before {
+      content: '';
+      position: absolute; top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, var(--orange), transparent);
+    }
+    .download-version {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--orange);
+      letter-spacing: 0.18em;
+      margin-bottom: 1.5rem;
+    }
+    .download-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3rem;
+      letter-spacing: 0.06em;
+      margin-bottom: 1rem;
+    }
+    .download-desc {
+      font-size: 0.9rem;
+      color: rgba(245,240,232,0.6);
+      line-height: 1.75;
+      margin-bottom: 2.5rem;
+    }
+    .download-meta {
+      display: flex; justify-content: center; gap: 2rem;
+      margin-top: 1.8rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(245,240,232,0.08);
+    }
+    .download-meta-item {
+      font-size: 0.78rem;
+      color: rgba(245,240,232,0.4);
+      display: flex; align-items: center; gap: 0.4rem;
+    }
+
+    /* ─── FOOTER ─── */
+    footer {
+      padding: 3rem 3rem 2.5rem;
+      border-top: 1px solid rgba(245,240,232,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.5rem;
+      letter-spacing: 0.12em;
+      color: var(--orange);
+    }
+    .footer-logo span { color: rgba(245,240,232,0.4); }
+    .footer-copy {
+      font-size: 0.78rem;
+      color: rgba(245,240,232,0.3);
+      letter-spacing: 0.06em;
+    }
+
+    /* ─── MOBILE ─── */
+    @media (max-width: 640px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      .hero { padding: 6rem 1.5rem 4rem; }
+      .hero-stats { gap: 2rem; flex-wrap: wrap; justify-content: center; }
+      .download-box { padding: 2.5rem 1.5rem; }
+      footer { flex-direction: column; text-align: center; padding: 2rem 1.5rem; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">Taller<span>PRO</span></div>
+  <ul class="nav-links">
+    <li><a href="#features">Funciones</a></li>
+    <li><a href="#video">Demo</a></li>
+    <li><a href="#descarga" class="nav-cta">Descargar</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid" aria-hidden="true"></div>
+  <div class="hero-eyebrow">Software Profesional de Taller</div>
+  <h1>Manuales.<em>Digitalizados.</em>Ordenados.</h1>
+  <p class="hero-desc">
+    La plataforma definitiva para gestionar manuales técnicos, procedimientos de taller y fichas de reparación. Todo en un lugar, accesible desde cualquier dispositivo.
+  </p>
+  <div class="hero-actions">
+    <a href="#descarga" class="btn-primary" onclick="trackDownload()">
+      ⬇ Descargar gratis
+    </a>
+    <a href="#video" class="btn-secondary">Ver demo en vivo</a>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-item">
+      <div class="stat-num" id="visit-count">—</div>
+      <div class="stat-label">Visitas totales</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">100%</div>
+      <div class="stat-label">Offline</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-num">v2.4</div>
+      <div class="stat-label">Versión actual</div>
+    </div>
+  </div>
+</section>
+
+<!-- VIDEO -->
+<section class="section-video" id="video">
+  <div class="section-tag">// demo en video</div>
+  <h2 class="section-title">Mirá TallerPRO<br>en acción</h2>
+  <p style="color:rgba(245,240,232,0.55); font-size:0.92rem; line-height:1.8; max-width:540px;">
+    Recorrido completo por las funcionalidades principales: importación de manuales, búsqueda inteligente, fichas técnicas y más.
+  </p>
+  <div class="video-wrapper">
+    <!--
+      IMPORTANTE: Reemplazá VIDEO_ID con el ID real de tu video de YouTube.
+      Ejemplo: si tu URL es https://youtube.com/watch?v=WR2y6VUyROU
+      entonces VIDEO_ID = WR2y6VUyROU
+    -->
+    <iframe
+      id="yt-player"
+      src="https://www.youtube.com/embed/VIDEO_ID?autoplay=1&mute=1&rel=0&modestbranding=1&color=white"
+      title="Demo TallerPRO"
+      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+      allowfullscreen>
+    </iframe>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="section-features" id="features">
+  <div class="section-tag">// funcionalidades</div>
+  <h2 class="section-title">Todo lo que<br>tu taller necesita</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <span class="feature-icon">📂</span>
+      <span class="feature-num">01</span>
+      <div class="feature-title">Biblioteca digital</div>
+      <p class="feature-desc">Organizá todos tus manuales en una biblioteca centralizada. Buscá por marca, modelo o número de parte en segundos.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🔍</span>
+      <span class="feature-num">02</span>
+      <div class="feature-title">Búsqueda inteligente</div>
+      <p class="feature-desc">Motor de búsqueda full-text dentro de PDFs y fichas técnicas. Encontrá cualquier procedimiento al instante.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🔧</span>
+      <span class="feature-num">03</span>
+      <div class="feature-title">Fichas de reparación</div>
+      <p class="feature-desc">Creá y editá fichas técnicas con pasos, torques, tiempos y repuestos necesarios para cada trabajo.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">💾</span>
+      <span class="feature-num">04</span>
+      <div class="feature-title">100% Offline</div>
+      <p class="feature-desc">Funciona sin internet. Toda la información disponible en el taller aunque no tengas conexión.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🖨️</span>
+      <span class="feature-num">05</span>
+      <div class="feature-title">Impresión rápida</div>
+      <p class="feature-desc">Imprimí fichas, procedimientos y listas de repuestos con un solo clic directamente desde la aplicación.</p>
+    </div>
+    <div class="feature-card">
+      <span class="feature-icon">🔒</span>
+      <span class="feature-num">06</span>
+      <div class="feature-title">Multi-usuario</div>
+      <p class="feature-desc">Acceso diferenciado por roles. El jefe de taller, los mecánicos y el mostrador ven solo lo que necesitan.</p>
+    </div>
+  </div>
+</section>
+
+<!-- DOWNLOAD -->
+<section class="section-download" id="descarga">
+  <div class="download-box">
+    <div class="download-version">// versión 2.4.1 — mayo 2025</div>
+    <h2 class="download-title">Descargá TallerPRO</h2>
+    <p class="download-desc">
+      Instalador para Windows 10/11. Sin suscripciones, sin internet requerida.<br>
+      Licencia para un solo equipo incluida en la descarga.
+    </p>
+    <!--
+      IMPORTANTE: Reemplazá el href con el link real a tu instalador.
+      Puede ser un link de Google Drive, Dropbox, o tu propio servidor.
+    -->
+    <a
+      href="https://drive.google.com/file/d/1VRI-DerIQmscO-02ghuWTTF-7-KKte5u/view?usp=drive_link"
+      class="btn-primary"
+      id="download-btn"
+      onclick="trackDownload(event)"
+      style="font-size:1rem; padding:1.1rem 2.8rem;"
+      download>
+      ⬇ Descargar instalador (.exe)
+    </a>
+    <div class="download-meta">
+      <span class="download-meta-item">⚙ Windows 10 / 11</span>
+      <span class="download-meta-item">📦 ~45 MB</span>
+      <span class="download-meta-item">✓ Sin publicidad</span>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">Taller<span>PRO</span></div>
+  <div class="footer-copy">© 2025 TallerPRO — Todos los derechos reservados</div>
+</footer>
+
+<script>
+  // ─── CONTADOR DE VISITAS ───
+  // Usamos CountAPI (gratis, sin registro)
+  const NAMESPACE = 'tallerpro-landing';
+  const VISIT_KEY = 'visits';
+  const DOWNLOAD_KEY = 'downloads';
+
+  async function countVisit() {
+    try {
+      const r = await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${VISIT_KEY}`);
+      const d = await r.json();
+      // El contador público solo muestra el número en hero
+      document.getElementById('visit-count').textContent = d.value.toLocaleString('es-AR');
+      // Guardamos en localStorage para el panel admin
+      localStorage.setItem('total_visits', d.value);
+    } catch(e) {
+      document.getElementById('visit-count').textContent = '···';
+    }
+  }
+
+  // ─── TRACK DESCARGA ───
+  async function trackDownload(e) {
+    try {
+      await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${DOWNLOAD_KEY}`);
+      localStorage.setItem('last_download', new Date().toISOString());
+    } catch(e) {}
+  }
+
+  countVisit();
+</script>
+
+</body>
+</html>
