@@ -412,7 +412,7 @@
   <div class="video-wrapper">
     <!--
       IMPORTANTE: Reemplazá VIDEO_ID con el ID real de tu video de YouTube.
-      Ejemplo: si tu URL es https://youtube.com/watch?v=WR2y6VUyROU 
+      Ejemplo: si tu URL es https://youtube.com/watch?v=WR2y6VUyROU
       entonces VIDEO_ID = WR2y6VUyROU
     -->
     <iframe
@@ -506,30 +506,22 @@
 </footer>
 
 <script>
-  // ─── CONTADOR DE VISITAS ───
-  // Usamos CountAPI (gratis, sin registro)
-  const NAMESPACE = 'tallerpro-landing';
-  const VISIT_KEY = 'visits';
-  const DOWNLOAD_KEY = 'downloads';
+  // ─── CONTADOR DE VISITAS ─── (counterapi.com - gratuito, sin registro)
+  const NAMESPACE = 'gavagcr-tallerpro';
 
   async function countVisit() {
     try {
-      const r = await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${VISIT_KEY}`);
+      const r = await fetch(`https://counterapi.com/api/${NAMESPACE}/view/visits`);
       const d = await r.json();
-      // El contador público solo muestra el número en hero
-      document.getElementById('visit-count').textContent = d.value.toLocaleString('es-AR');
-      // Guardamos en localStorage para el panel admin
-      localStorage.setItem('total_visits', d.value);
+      document.getElementById('visit-count').textContent = Number(d.value).toLocaleString('es-AR');
     } catch(e) {
       document.getElementById('visit-count').textContent = '···';
     }
   }
 
-  // ─── TRACK DESCARGA ───
   async function trackDownload(e) {
     try {
-      await fetch(`https://api.countapi.xyz/hit/${NAMESPACE}/${DOWNLOAD_KEY}`);
-      localStorage.setItem('last_download', new Date().toISOString());
+      await fetch(`https://counterapi.com/api/${NAMESPACE}/view/downloads`);
     } catch(e) {}
   }
 
