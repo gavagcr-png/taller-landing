@@ -506,27 +506,25 @@
 </footer>
 
 <script>
-  // ─── CONTADOR DE VISITAS ─── (counterapi.com - gratuito, sin registro)
-  const NAMESPACE = 'gavagcr-tallerpro';
+  // ─── CONTADOR DE VISITAS ─── (counterapi.dev - gratuito, sin registro)
+  document.addEventListener('DOMContentLoaded', function() {
+    const counter = new Counter({ workspace: 'gavagcr-tallerpro', version: 'v1' });
 
-  async function countVisit() {
-    try {
-      const r = await fetch(`https://counterapi.com/api/${NAMESPACE}/view/visits`);
-      const d = await r.json();
-      document.getElementById('visit-count').textContent = Number(d.value).toLocaleString('es-AR');
-    } catch(e) {
-      document.getElementById('visit-count').textContent = '···';
-    }
+    counter.up('visits')
+      .then(result => {
+        document.getElementById('visit-count').textContent = Number(result.value).toLocaleString('es-AR');
+      })
+      .catch(() => {
+        document.getElementById('visit-count').textContent = '···';
+      });
+  });
+
+  function trackDownload(e) {
+    const counter = new Counter({ workspace: 'gavagcr-tallerpro', version: 'v1' });
+    counter.up('downloads').catch(() => {});
   }
-
-  async function trackDownload(e) {
-    try {
-      await fetch(`https://counterapi.com/api/${NAMESPACE}/view/downloads`);
-    } catch(e) {}
-  }
-
-  countVisit();
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/counterapi/dist/counter.browser.min.js"></script>
 </body>
 </html>
