@@ -377,9 +377,10 @@
   async function loadStats() {
     document.getElementById('last-update').textContent = 'Cargando...';
     try {
+      const counter = new Counter({ workspace: 'gavagcr-tallerpro', version: 'v1' });
       const [rv, rd] = await Promise.all([
-        fetch(`https://counterapi.com/api/${NAMESPACE}/view/visits?readOnly=true`).then(r => r.json()),
-        fetch(`https://counterapi.com/api/${NAMESPACE}/view/downloads?readOnly=true`).then(r => r.json())
+        counter.get('visits'),
+        counter.get('downloads')
       ]);
 
       const visits = Number(rv.value) || 0;
@@ -407,5 +408,6 @@
   if (sessionStorage.getItem('admin_auth') === '1') showDashboard();
 </script>
 
+<script src="https://cdn.jsdelivr.net/npm/counterapi/dist/counter.browser.min.js"></script>
 </body>
 </html>
