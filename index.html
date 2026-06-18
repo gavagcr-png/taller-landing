@@ -412,12 +412,12 @@
   <div class="video-wrapper">
     <!--
       IMPORTANTE: Reemplazá VIDEO_ID con el ID real de tu video de YouTube.
-      Ejemplo: si tu URL es https://youtube.com/watch?v=WR2y6VUyROU
-      entonces VIDEO_ID = WR2y6VUyROU
+      Ejemplo: si tu URL es https://youtube.com/watch?v=dQw4w9WgXcQ
+      entonces VIDEO_ID = dQw4w9WgXcQ
     -->
     <iframe
       id="yt-player"
-      src="https://www.youtube.com/embed/WR2y6VUyROU?autoplay=1&mute=1&rel=0&modestbranding=1&color=white"
+      src="https://www.youtube.com/embed/VIDEO_ID?autoplay=1&mute=1&rel=0&modestbranding=1&color=white"
       title="Demo TallerPRO"
       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
       allowfullscreen>
@@ -483,7 +483,7 @@
       Puede ser un link de Google Drive, Dropbox, o tu propio servidor.
     -->
     <a
-      href="https://drive.google.com/file/d/1VRI-DerIQmscO-02ghuWTTF-7-KKte5u/view?usp=drive_link"
+      href="TU_LINK_DE_DESCARGA_AQUI"
       class="btn-primary"
       id="download-btn"
       onclick="trackDownload(event)"
@@ -506,25 +506,70 @@
 </footer>
 
 <script>
-  // ─── CONTADOR DE VISITAS ─── (counterapi.dev - gratuito, sin registro)
-  document.addEventListener('DOMContentLoaded', function() {
-    const counter = new Counter({ workspace: 'gavagcr-tallerpro', version: 'v1' });
+  // ─── CONTADOR DE VISITAS ───
+  // Usa GitHub API para leer/escribir stats.json en el mismo repo
+  // CONFIGURÁ estos valores con tu usuario y repo de GitHub:
+  const GH_USER = 'gavagcr-png';
+  const GH_REPO = 'taller-landing';
+  // Token de GitHub con permiso "Contents: Read and Write"
+  // Generalo en: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained
+  // IMPORTANTE: este token solo puede escribir en TU repo, no es peligroso exponerlo aquí
+  const GH_TOKEN = 'TU_TOKEN_AQUI';
+  const STATS_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/stats.json`;
 
-    counter.up('visits')
-      .then(result => {
-        document.getElementById('visit-count').textContent = Number(result.value).toLocaleString('es-AR');
-      })
-      .catch(() => {
-        document.getElementById('visit-count').textContent = '···';
+  async function updateStat(field) {
+    try {
+      // 1. Leer archivo actual
+      const res = await fetch(STATS_URL, {
+        headers: { 'Authorization': `token ${GH_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
       });
-  });
+      const file = await res.json();
+      const data = JSON.parse(atob(file.content.replace(/
+/g,'')));
+      data[field] = (data[field] || 0) + 1;
+
+      // 2. Guardar con el valor incrementado
+      await fetch(STATS_URL, {
+        method: 'PUT',
+        headers: {
+          'Authorization': `token ${GH_TOKEN}`,
+          'Accept': 'application/vnd.github.v3+json',
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          message: `stat: ${field}++`,
+          content: btoa(JSON.stringify(data)),
+          sha: file.sha
+        })
+      });
+      return data[field];
+    } catch(e) { return null; }
+  }
+
+  async function readStats() {
+    try {
+      const res = await fetch(STATS_URL + '?t=' + Date.now(), {
+        headers: { 'Accept': 'application/vnd.github.v3+json' }
+      });
+      const file = await res.json();
+      return JSON.parse(atob(file.content.replace(/
+/g,'')));
+    } catch(e) { return null; }
+  }
+
+  async function countVisit() {
+    const val = await updateStat('visits');
+    const el = document.getElementById('visit-count');
+    if (val !== null) el.textContent = val.toLocaleString('es-AR');
+    else el.textContent = '···';
+  }
 
   function trackDownload(e) {
-    const counter = new Counter({ workspace: 'gavagcr-tallerpro', version: 'v1' });
-    counter.up('downloads').catch(() => {});
+    updateStat('downloads');
   }
+
+  countVisit();
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/counterapi/dist/counter.browser.min.js"></script>
 </body>
 </html>
