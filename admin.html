@@ -345,7 +345,10 @@
   const ADMIN_USER = 'admin';
   const ADMIN_PASS = 'taller2025';   // ← CAMBIÁ ESTO
 
-  const NAMESPACE = 'gavagcr-tallerpro';
+  const GH_USER = 'gavagcr-png';
+  const GH_REPO = 'taller-landing';
+  const GH_TOKEN = 'TU_TOKEN_AQUI';  // mismo token que en index.html
+  const STATS_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/stats.json`;
 
   function doLogin() {
     const u = document.getElementById('username').value.trim();
@@ -377,14 +380,14 @@
   async function loadStats() {
     document.getElementById('last-update').textContent = 'Cargando...';
     try {
-      const counter = new Counter({ workspace: 'gavagcr-tallerpro', version: 'v1' });
-      const [rv, rd] = await Promise.all([
-        counter.get('visits'),
-        counter.get('downloads')
-      ]);
+      const res = await fetch(STATS_URL + '?t=' + Date.now(), {
+        headers: { 'Accept': 'application/vnd.github.v3+json' }
+      });
+      const file = await res.json();
+      const data = JSON.parse(atob(file.content.replace(/\n/g,'')));
 
-      const visits = Number(rv.value) || 0;
-      const downloads = Number(rd.value) || 0;
+      const visits = data.visits || 0;
+      const downloads = data.downloads || 0;
       const rate = visits > 0 ? ((downloads / visits) * 100).toFixed(1) + '%' : '0%';
 
       document.getElementById('d-visits').textContent = visits.toLocaleString('es-AR');
@@ -408,6 +411,5 @@
   if (sessionStorage.getItem('admin_auth') === '1') showDashboard();
 </script>
 
-<script src="https://cdn.jsdelivr.net/npm/counterapi/dist/counter.browser.min.js"></script>
 </body>
 </html>
