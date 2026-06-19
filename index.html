@@ -506,70 +506,19 @@
 </footer>
 
 <script>
-  // ─── CONTADOR DE VISITAS ───
-  // Usa GitHub API para leer/escribir stats.json en el mismo repo
-  // CONFIGURÁ estos valores con tu usuario y repo de GitHub:
-  const GH_USER = 'gavagcr-png';
-  const GH_REPO = 'taller-landing';
-  // Token de GitHub con permiso "Contents: Read and Write"
-  // Generalo en: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained
-  // IMPORTANTE: este token solo puede escribir en TU repo, no es peligroso exponerlo aquí
-  const GH_TOKEN = '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';
-  const STATS_URL = `https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/stats.json`;
-
-  async function updateStat(field) {
-    try {
-      // 1. Leer archivo actual
-      const res = await fetch(STATS_URL, {
-        headers: { 'Authorization': `token ${GH_TOKEN}`, 'Accept': 'application/vnd.github.v3+json' }
-      });
-      const file = await res.json();
-      const data = JSON.parse(atob(file.content.replace(/
-/g,'')));
-      data[field] = (data[field] || 0) + 1;
-
-      // 2. Guardar con el valor incrementado
-      await fetch(STATS_URL, {
-        method: 'PUT',
-        headers: {
-          'Authorization': `token ${GH_TOKEN}`,
-          'Accept': 'application/vnd.github.v3+json',
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          message: `stat: ${field}++`,
-          content: btoa(JSON.stringify(data)),
-          sha: file.sha
-        })
-      });
-      return data[field];
-    } catch(e) { return null; }
-  }
-
-  async function readStats() {
-    try {
-      const res = await fetch(STATS_URL + '?t=' + Date.now(), {
-        headers: { 'Accept': 'application/vnd.github.v3+json' }
-      });
-      const file = await res.json();
-      return JSON.parse(atob(file.content.replace(/
-/g,'')));
-    } catch(e) { return null; }
-  }
-
-  async function countVisit() {
-    const val = await updateStat('visits');
-    const el = document.getElementById('visit-count');
-    if (val !== null) el.textContent = val.toLocaleString('es-AR');
-    else el.textContent = '···';
-  }
-
+  // ─── TRACKING DE DESCARGA ─── (GoatCounter event)
   function trackDownload(e) {
-    updateStat('downloads');
+    if (window.goatcounter && window.goatcounter.count) {
+      window.goatcounter.count({ path: 'descarga', title: 'Click Descarga', event: true });
+    }
   }
-
-  countVisit();
+  // El contador del hero muestra ✓ (GoatCounter no expone el número público)
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('visit-count').textContent = '✓';
+  });
 </script>
+<script data-goatcounter="https://taller-landing.goatcounter.com/count"
+        async src="//gc.zgo.at/count.js"></script>
 
 </body>
 </html>
