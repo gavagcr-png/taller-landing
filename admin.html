@@ -378,6 +378,11 @@
   }
 
   async function loadStats() {
+    // Abre el panel de GoatCounter en nueva pestaña
+    window.open('https://taller-landing.goatcounter.com', '_blank');
+    document.getElementById('last-update').textContent = 'Panel GoatCounter abierto en nueva pestaña';
+    return;
+    // --- código legacy abajo (desactivado) ---
     document.getElementById('last-update').textContent = 'Cargando...';
     try {
       const res = await fetch(STATS_URL + '?t=' + Date.now(), {
@@ -411,5 +416,7 @@
   if (sessionStorage.getItem('admin_auth') === '1') showDashboard();
 </script>
 
+  <script data-goatcounter="https://taller-landing.goatcounter.com/count"
+          async src="//gc.zgo.at/count.js"></script>
 </body>
 </html>
